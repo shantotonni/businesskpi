@@ -70,6 +70,7 @@
                             <tr>
                                 <th>SN</th>
                                 <th>UserID</th>
+                                <th>Last Entry Period</th>
                                 <th>Business Name</th>
                                 <th>ValueDriver</th>
                                 <th>SubValueDriver</th>
@@ -89,6 +90,7 @@
                                 <tr class="gradeX">
                                     <td><?php echo ++$key; ?></td>
                                     <td><?php echo $value['UserID']; ?></td>
+                                    <td><?php echo $value['LastEntryperiod']; ?></td>
                                     <td><?php echo $value['BusinessName']; ?></td>
                                     <td><?php echo $value['ValueDriver']; ?></td>
                                     <td><?php echo $value['SubValueDriver']; ?></td>

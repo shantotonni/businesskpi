@@ -613,11 +613,11 @@ class Kpi_m extends CI_Model {
         }
     }
 
-    public function doLoadMyKPIData($userid, $year){
+    public function doLoadMyKPIData($userid, $period_from, $period_to){
         $CI = & get_instance();
         $CI->db = $this->load->database('kpi', true);
 
-        $sql = "exec usp_doLoadMyKPIData '$userid', '$year'" ;
+        $sql = "exec usp_doLoadMyKPIData '$userid', '$period_from', '$period_to'" ;
         $query = $this->db->query($sql);
         if ($query) {
             return $query->result_array();

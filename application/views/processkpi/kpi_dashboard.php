@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+    <meta charset="utf-8" />
     <title>KPI Report</title>
     <link rel="stylesheet" href="<?php echo base_url(); ?>kpiprocess/assets/css/bootstrap.min.css"
           crossorigin="anonymous">
@@ -94,6 +95,26 @@
                     </div>
                 </div>
 
+                <div class="co1-md-6" style="background: white;padding: 10px;margin-left: 10px;margin-bottom: 20px">
+                    <div id="chartReport6">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="padding-top: 15px">
+                <div style="padding-top: 10px"></div>
+                <div class="co1-md-6" style="background: white;padding: 10px;;margin-bottom: 20px">
+                    <div id="chartReport7">
+
+                    </div>
+                </div>
+
+<!--                <div class="co1-md-6" style="background: white;padding: 10px;margin-left: 10px;margin-bottom: 20px">-->
+<!--                    <div id="chartReport7">-->
+<!---->
+<!--                    </div>-->
+<!--                </div>-->
             </div>
 
         </div>
@@ -101,6 +122,7 @@
 </div>
 
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         $.ajax({
@@ -108,11 +130,13 @@
             type: 'GET',
             success: function (data) {
                 let response = JSON.parse(data);
-                chartOne(response);
-                chartTwo(response);
-                chartThree(response);
-                chartFour(response);
-                chartFive(response);
+                //chartOne(response);
+               // chartTwo(response);
+                //chartThree(response);
+                //chartFour(response);
+                //chartFive(response);
+                //chartSix(response);
+                chartSeven(response);
             }
         });
 
@@ -129,6 +153,7 @@
                     chartThree(response);
                     chartFour(response);
                     chartFive(response);
+                    chartSix(response);
                 }
             });
         })
@@ -479,6 +504,144 @@
                     },
                     responsive: false
                 }
+            });
+        }
+
+        function chartSix(response){
+            document.querySelector("#chartReport6").innerHTML = '<div id="myChart6" style="width: 900px;height:500px;"></div>';
+            //Start chart Three
+            let recordFive = response.record_five;
+            let kpi_title = response.kpi_title;
+            console.log(recordFive)
+
+            let chart_five_values = [];
+
+            recordFive.forEach((getRecord, index) => {
+                chart_five_values.push(getRecord.U008);
+            })
+
+            let max_value = Math.max.apply(Math,chart_five_values);
+            let value_index = recordFive[0].U008 / recordFive[1].U008
+            console.log(value_index)
+
+
+            var myChart = echarts.init(document.getElementById('myChart6'));
+
+            // Specify the configuration items and data for the chart
+            var option = {
+                series: [
+                    {
+                        min: 0,
+                        max: max_value,
+                        type: 'gauge',
+                        data: [
+                            {
+                                value: value_index,
+                               // name: 'SCORE'
+                            }
+                        ]
+                    }
+                ]
+            };
+            myChart.setOption(option);
+        }
+
+        function chartSeven(response) {
+            document.querySelector("#chartReport7").innerHTML = '<canvas style="height: 500px;width: 900px" id="myChart7"></canvas>';
+            //Start chart Three
+            let recordThree = response.record_three;
+            let kpi_title = response.kpi_title;
+
+            let chart_three_labels = [];
+            let chart_three_values = {};
+            let chart_three_keys = [];
+
+            recordThree.forEach((getRecord, index) => {
+                chart_three_labels.push(getRecord.Period);
+                if (index == 0) {
+                    chart_three_keys = Object.keys(getRecord)
+                    chart_three_keys.forEach((key) => {
+                        if (key != 'Period')
+                            chart_three_values[key] = []
+                    })
+                }
+                chart_three_keys.forEach((key) => {
+                    if (key != 'Period')
+                        chart_three_values[key].push(getRecord[key])
+                })
+            })
+
+            let chart_three_records = [];
+            let chart_three_color = ''
+            let chartType = ''
+            let final_label = []
+            console.log(chart_three_keys)
+
+            let barCount = 0, lineCount = 0, find = {};
+            chart_three_keys.forEach((key) => {
+                find = kpi_title.find((item) => {
+                    return key === item.KPICode
+                })
+                if (find) {
+                    if (find.ChartType === 'Line') lineCount++
+                    else barCount++
+                }
+
+            })
+
+
+            let lineIndex = 0, barIndex = lineCount;
+            chart_three_keys.forEach((key, index) => {
+                if (index !== 0) {
+                    chart_three_color = Math.floor(Math.random() * 16777215).toString(16)
+                    final_label = kpi_title.find((item) => {
+                        return key === item.KPICode
+                    })
+
+                    chart_three_records.push(
+                        {
+                            label: final_label.KPIName,
+                            type: (final_label.ChartType).toLowerCase(),
+                            data: chart_three_values[key],
+                            backgroundColor: '#' + chart_three_color,
+                            borderColor: '#' + chart_three_color,
+                            borderWidth: 1,
+                            yAxisID: (final_label.ChartType).toLowerCase() === 'bar' ? 'y1' : 'y',
+                            order: (final_label.ChartType).toLowerCase() === 'bar' ?barIndex ++: lineIndex++
+                        }
+                    )
+                }
+            })
+            var myChart7 = document.getElementById('myChart7');
+            var myChart = new Chart(myChart7, {
+                type: 'bar',
+                data: {
+                    labels: chart_three_labels,
+                    datasets: chart_three_records
+                },
+                options: {
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    responsive: false,
+                    stacked: false,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        },
+                    }
+                },
             });
         }
     });

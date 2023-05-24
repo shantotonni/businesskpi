@@ -878,6 +878,8 @@ class Kpi extends MY_Controller {
         $data['dept_name'] = $this->session->userdata('dept_name');
         $data['designation'] = $this->session->userdata('designation');
         $year = $this->input->post('year');
+        $period_from = $this->input->post('period_from');
+        $period_to = $this->input->post('period_to');
         $export = $this->input->post('export');
 
         if (empty($year)){
@@ -887,7 +889,11 @@ class Kpi extends MY_Controller {
         }
 
         $data['year'] = $year;
-        $data['my_kpi_data'] = $this->kpi_m->doLoadMyKPIData($data['userid'], $data['year']);
+        $data['period_from'] = $period_from;
+        $data['period_to'] = $period_to;
+        //echo '<pre/>';print_r($data);exit();
+        $data['my_kpi_data'] = $this->kpi_m->doLoadMyKPIData($data['userid'], $data['period_from'], $data['period_to']);
+       // echo '<pre/>';print_r($data['my_kpi_data']);exit();
 
         if ($export =='export'){
             $filename = 'MY KPI Data';
@@ -1198,7 +1204,7 @@ class Kpi extends MY_Controller {
             $data['valuedriver'] = $valuedriver;
 
             $data['kpi_status_data'] = $this->kpi_m->getKPIStatusData($data['userid'],$data['Business'], $data['valuedriver']);
-            //echo '<pre/>';print_r($data['kpi_status_data']);exit();
+           // echo '<pre/>';print_r($data['kpi_status_data']);exit();
         }
 
         if ($this->input->post('export') == 'export'){

@@ -397,15 +397,18 @@ class Processkpi extends MY_Controller {
        // $lm = $_POST['lm'];
         $sply = $_POST['sply'];
         $data['userid'] = mssql_escape($this->session->userdata('userid'), true);
-        //echo "<pre />";print_r($value); exit();
 
         foreach( $value as $val){
-            if( !is_numeric($val)){
-                $msg['message'] = "Please Inter Numeric value";
-                $this->session->set_userdata($msg);
-                return redirect(base_url('/processkpi/yearlyprocesskpientry'));
+            if (!empty($val)) {
+                if (!is_numeric($val)) {
+                    $msg['message'] = "Please Inter Numeric value";
+                    $msg['type'] = "error";
+                    $this->session->set_userdata($msg);
+                    return redirect(base_url('/processkpi/yearlyprocesskpientry'));
+                }
             }
         }
+        //echo "<pre />";print_r('ok'); exit();
 //        foreach( $lm as $val2){
 //            if( !is_numeric( $val2)){
 //                $msg['message'] = "Please Inter Numeric value";
@@ -416,25 +419,46 @@ class Processkpi extends MY_Controller {
 
        // echo "<pre />";print_r($sply); exit();
         foreach( $sply as $val3){
-            if( !is_numeric( $val3)){
-                $msg['message'] = "Please Inter Numeric value";
-                $this->session->set_userdata($msg);
-                return redirect(base_url('/processkpi/yearlyprocesskpientry'));
+            if (!empty($val3)) {
+                if (!is_numeric($val3)) {
+                    $msg['message'] = "Please Inter Numeric value";
+                    $msg['type'] = "error";
+                    $this->session->set_userdata($msg);
+                    return redirect(base_url('/processkpi/yearlyprocesskpientry'));
+                }
             }
         }
         foreach ($component as $row => $comp)
         {
+            if ($_POST['value'][$row] !== ''){
+                $val = $_POST['value'][$row];
+            }else{
+                $val = null;
+            }
+
+            if ($_POST['sply'][$row] !== ''){
+                $SPLY = $_POST['sply'][$row];
+            }else{
+                $SPLY = null;
+            }
+
             $data_array [] = [
                 'KPICode' => $_POST['kpi'],
                 'ComponentCode' => $_POST['component'][$row],
                 'Business' => $_POST['Business'],
                 'Period' => $_POST['month'][$row],
-                'Value' => $_POST['value'][$row],
+                'Value' => $val,
                // 'LM' => $_POST['lm'][$row],
-                'SPLY' => $_POST['sply'][$row],
+                'LM' => null,
+                'SPLY' => $SPLY,
                 'EntryBy' => $data['userid'],
+                'EntryDate' => date('Y-m-d H:i:s'),
+                'EditedBy' => $data['userid'],
+                'EditedDate' => date('Y-m-d H:i:s'),
             ];
         }
+
+        //echo "<pre />";print_r($data_array); exit();
 
         foreach ($data_array as $value){
             $this->Processkpi_m->deleteKPIBYKPICodeYear($value);
@@ -445,6 +469,7 @@ class Processkpi extends MY_Controller {
         }
 
         $msg['message'] = "Process KPI Successfully Added.";
+        $msg['type'] = 'success';
         $this->session->set_userdata($msg);
         return redirect('/processkpi/yearlyprocesskpientry');
 
@@ -506,10 +531,10 @@ class Processkpi extends MY_Controller {
                 'Business'=>$Business,
                 'ComponentCode'=>$ComponentCode,
                 'KPICode'=>$kpicode,
-                'LM'=>isset($value[0]['LM']) ? $value[0]['LM'] : 0.00,
+                'LM'=>isset($value[0]['LM']) ? $value[0]['LM'] : null,
                 'Period'=>isset($value[0]['Period']) ? $value[0]['Period'] : '',
-                'SPLY'=>isset($value[0]['SPLY']) ? $value[0]['SPLY'] : 0.00,
-                'Value'=>isset($value[0]['Value']) ? $value[0]['Value'] : 0.00,
+                'SPLY'=>isset($value[0]['SPLY']) ? $value[0]['SPLY'] : null,
+                'Value'=>isset($value[0]['Value']) ? $value[0]['Value'] : null,
             ];
         }
 

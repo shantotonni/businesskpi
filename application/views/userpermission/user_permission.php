@@ -178,6 +178,7 @@ $(document).ready(function() {
     });
 });
 $("#selectAllBusiness").click(function(){
+    alert('ok');
     if($("#selectAllBusiness").is(':checked') ){
         $(".business > option").prop("selected","selected");
         $(".business").trigger("change");

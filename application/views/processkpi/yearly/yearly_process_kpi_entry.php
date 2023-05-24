@@ -17,7 +17,11 @@
                     <div class="widget-content nopadding">
                         <?php
                         $message = $this->session->userdata('message');
-                        if (isset($message)) {
+                        $type = $this->session->userdata('type');
+                        if ($type == 'error' && isset($message)) {
+                            echo '<p style="color: red;text-align: center;padding: 10px;font-weight: 600;font-size: 30px;">' . $message . '</p>';
+                            $this->session->unset_userdata('message');
+                        }else{
                             echo '<p style="color: darkgreen;text-align: center;padding: 10px;font-weight: 600;font-size: 30px;">' . $message . '</p>';
                             $this->session->unset_userdata('message');
                         }
